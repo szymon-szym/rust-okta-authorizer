@@ -1,0 +1,72 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Dummy project testing custom authorizers
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 3
+    MemorySize: 128
+    Tracing: Active
+  Api:
+    TracingEnabled: true
+
+Resources:
+
+  MyApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Auth:
+        DefaultAuthorizer: MyLambdaTokenAuthorizer
+        Authorizers:
+          MyLambdaTokenAuthorizer:
+            FunctionArn: !GetAtt CustomAuthorizer.Arn
+
+  HelloWorldFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Metadata:
+      BuildMethod: rust-cargolambda # More info about Cargo Lambda: https://github.com/cargo-lambda/cargo-lambda
+    Properties:
+      CodeUri: ./rust_app # Points to dir of Cargo.toml
+      Handler: bootstrap # Do not change, as this is the default executable name produced by Cargo Lambda
+      Runtime: provided.al2
+      Architectures:
+        - x86_64
+      Events:
+        HelloWorld:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            RestApiId: !Ref MyApi
+            Path: /hello/{userId}
+            Method: get
+  CustomAuthorizer:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Metadata:
+      BuildMethod: rust-cargolambda # More info about Cargo Lambda: https://github.com/cargo-lambda/cargo-lambda
+    Properties:
+      CodeUri: ./authorizer # Points to dir of Cargo.toml
+      Handler: bootstrap # Do not change, as this is the default executable name produced by Cargo Lambda
+      Runtime: provided.al2
+      Environment:
+        Variables:
+          KEYS_TABLE_NAME: !Ref KeysTable
+          OKTA_KEYS_ENDPOINT: "https://dev-56344269.okta.com/oauth2/default/v1/keys"
+      Architectures:
+        - x86_64
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref KeysTable
+
+
+  KeysTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+      - AttributeName: PK
+        AttributeType: S
+      KeySchema:
+      - AttributeName: PK
+        KeyType: HASH
+      BillingMode: PAY_PER_REQUEST

@@ -1,0 +1,36 @@
+{
+  "name": "okta-hosted-login",
+  "version": "2.0.0",
+  "private": true,
+  "scripts": {
+    "start": "vue-cli-service serve",
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "test": "npm run lint && npm run test:okta-hosted-login --prefix ../",
+    "pretest": "npm run pretest --prefix ../",
+    "postinstall": "npm run patch-semantic-ui-css --prefix ../"
+  },
+  "dependencies": {
+    "@okta/okta-auth-js": "^7.0.0",
+    "@okta/okta-vue": "^5.5.0",
+    "axios": "^0.27.2",
+    "core-js": "^3.15.1",
+    "fomantic-ui-css": "^2.8.8",
+    "text-encoding": "^0.7.0",
+    "vue": "^3.1.2",
+    "vue-final-modal": "^3.4.3",
+    "vue-router": "^4.0.10"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "~5.0.8",
+    "@vue/cli-plugin-eslint": "~5.0.8",
+    "@vue/cli-plugin-router": "~5.0.8",
+    "@vue/cli-service": "~5.0.8",
+    "@vue/compiler-sfc": "^3.1.2",
+    "@babel/eslint-parser": "^7.18.9",
+    "eslint": "^7.29.0",
+    "eslint-plugin-vue": "^7.11.1",
+    "vue-loader-v16": "npm:vue-loader@^16.1.2"
+  }
+}

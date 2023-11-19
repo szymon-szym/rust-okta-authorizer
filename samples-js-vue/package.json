@@ -1,0 +1,55 @@
+{
+  "name": "@okta/samples-js-vue",
+  "version": "0.2.0",
+  "description": "Vue Sample Applications for Okta",
+  "scripts": {
+    "lint": "npm run --prefix okta-hosted-login/ lint && npm run --prefix custom-login/ lint",
+    "test": "npm run lint && npm run test:e2e",
+    "okta-hosted-login-server": "npm start --prefix okta-hosted-login/",
+    "test:okta-hosted-login": "export TEST_TYPE=implicit || setx TEST_TYPE \"implicit\" && protractor okta-oidc-tck/e2e-tests/okta-hosted-login/conf.js",
+    "custom-login-server": "npm start --prefix custom-login/",
+    "test:custom-login": "export TEST_TYPE=implicit || setx TEST_TYPE \"implicit\" && protractor okta-oidc-tck/e2e-tests/custom-login/conf.js",
+    "resource-server": "node scripts/startResourceServer.js",
+    "preresource-server": "npm run setup-env",
+    "test:e2e": "npm run test:okta-hosted-login && npm run stop && npm run test:custom-login",
+    "pretest": "node ./scripts/update-se-drivers.js && npm run setup-env",
+    "pretest-legacy": "npm run webdriver-update-legacy && npm run setup-env",
+    "postinstall": "npm run install-custom-login && npm run install-okta-hosted-login && npm run patch-semantic-ui-css",
+    "setup-env": "node scripts/setup-env.js",
+    "patch-semantic-ui-css": "node scripts/patch-semantic-ui-css.js",
+    "install-custom-login": "cd custom-login && npm install --allow-root",
+    "install-okta-hosted-login": "cd okta-hosted-login && npm install",
+    "webdriver-update-legacy": "webdriver-manager update --versions.standalone=3.141.59 --versions.chrome 2.45 --gecko false",
+    "stop": "kill -s TERM $(lsof -t -i:8080 -sTCP:LISTEN) || true",
+    "build:okta-hosted-login": "cd ./okta-hosted-login && npm install --production=false && npm run build",
+    "build:custom-login": "cd ./custom-login && npm install --production=false && npm run build",
+    "build": "npm run build:okta-hosted-login && npm run build:custom-login",
+    "start": "node ./heroku/server.js",
+    "dev": "nodemon ./heroku/server.js"
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/okta/samples-js-vue.git"
+  },
+  "bugs": "https://github.com/okta/samples-js-vue/issues",
+  "homepage": "https://github.com/okta/samples-js-vue",
+  "devDependencies": {
+    "axios": "^0.27.2",
+    "dotenv": "^8.6.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "find-process": "^1.4.4",
+    "jasmine-reporters": "^2.4.0",
+    "nodemon": "^2.0.21",
+    "platform": "^1.3.6",
+    "protractor": "^7.0",
+    "wait-on": "^7.0.1"
+  },
+  "bin": {},
+  "private": true,
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
